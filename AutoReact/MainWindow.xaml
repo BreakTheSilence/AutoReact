@@ -11,7 +11,7 @@
             <RowDefinition Height="*"/>
             <RowDefinition Height="0.5*"/>
         </Grid.RowDefinitions>
-        <Border Grid.Row="0" CornerRadius="8" BorderThickness="3" BorderBrush="Aqua">
+        <Border Grid.Row="0" CornerRadius="8" BorderThickness="3" x:Name="MainBorder">
             <StackPanel Orientation="Vertical">
                 <TextBlock x:Name="CursorPosition" HorizontalAlignment="Center"/>
 
@@ -21,7 +21,10 @@
         <StackPanel Grid.Row="1" Orientation="Horizontal">
                 <Button Content="Calibrate" Click="CalibrateButtonClick" Width="100" HorizontalAlignment="Center" Height="50"/>
                 <Button Click="SetReactor_420" Width="100" HorizontalAlignment="Center" Height="50">
-                    <TextBlock Text="Разложить ректор 420" TextWrapping="Wrap"/>
+                    <TextBlock Text="Разложить ректор 420 (Main)" TextWrapping="Wrap"/>
+                </Button>
+                <Button Click="SetReactor_420_Left" Width="100" HorizontalAlignment="Center" Height="50">
+                    <TextBlock Text="Разложить ректор 420 (Остальное)" TextWrapping="Wrap"/>
                 </Button>
         </StackPanel>
     </Grid>
