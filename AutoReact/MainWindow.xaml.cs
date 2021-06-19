@@ -4,7 +4,9 @@ using System.Windows.Media;
 using AutoReact.Entities;
 using AutoReact.Events;
 using AutoReact.Helpers;
+using AutoReact.Schemas;
 using AutoReact.Services;
+using AutoReact.Views;
 
 namespace AutoReact
 {
@@ -14,70 +16,58 @@ namespace AutoReact
     public partial class MainWindow : Window
     {
         private CalibrationObject _calibrationObject;
-        private LayoutService _layoutService;
-        private RegistryService _registryService;
+        private readonly CalibrationService _calibrationService;
 
         public MainWindow()
         {
             InitializeComponent();
-            _registryService = new RegistryService();
+            _calibrationService = new CalibrationService();
             RetrieveCalibrationSettingsFromRegistry();
-        }
-
-
-        private async void CalibrateButtonClick(object sender, RoutedEventArgs e)
-        {
-            TipTextBlock.Visibility = Visibility.Visible;
-            var calibrationService = new CalibrationService();
-            calibrationService.CalibrationEvent += CalibrationServiceEvent;
-            _calibrationObject = await calibrationService.Calibrate();
-            var jsonString = JsonConverter.ConvertToJson(_calibrationObject);
-            if (!string.IsNullOrEmpty(jsonString))
-            {
-                _registryService.WriteToRegistry("UserSettings", jsonString);
-            }
-            MainBorder.BorderBrush = Brushes.LimeGreen;
-            _layoutService = new LayoutService(_calibrationObject);
-            TipTextBlock.Visibility = Visibility.Collapsed;
-        }
-
-        private void CalibrationServiceEvent(object? sender, EventArgs e)
-        {
-            if (!(e is CalibrationEventArgs args)) return;
-            TipTextBlock.Text = args.Message;
-        }
-
-        private async void SetReactor_420(object sender, RoutedEventArgs e)
-        {
-            if (_layoutService == null) return;
-            await _layoutService.SetReactor_420_Main();
-        }
-
-        private async void SetReactor_420_Left(object sender, RoutedEventArgs e)
-        {
-            if (_layoutService == null) return;
-            await _layoutService.SetReactor_420_Left();
         }
 
         private void RetrieveCalibrationSettingsFromRegistry()
         {
-            var jsonString = _registryService.ReadFromRegistry("UserSettings");
+            var jsonString = RegistryService.ReadFromRegistry("UserSettings");
             if (jsonString == null)
             {
-                MainBorder.BorderBrush = Brushes.Red;
+                CalibrationStateRec.Fill = Brushes.Red;
                 return;
             }
             var settings = JsonConverter.ConvertFromJson(jsonString, new CalibrationObject());
             if (settings is CalibrationObject obj)
             {
                 _calibrationObject = obj;
-                MainBorder.BorderBrush = Brushes.LimeGreen;
-                _layoutService = new LayoutService(_calibrationObject);
+                CalibrationStateRec.Fill = Brushes.LimeGreen;
             }
             else
             {
-                MainBorder.BorderBrush = Brushes.Red;
+                CalibrationStateRec.Fill = Brushes.Red;
             }
+        }
+
+        private void NavigateToCalibrationView(object sender, RoutedEventArgs e)
+        {
+            var calibrationView = new CalibrationView();
+            calibrationView.InitializePage(_calibrationService);
+
+            calibrationView.CalibrationCompleted += delegate(object? o, EventArgs args)
+            {
+                if (!(args is CalibrationCompletedEventArgs e)) return;
+                _calibrationObject = e.CalibrationObject;
+                CalibrationStateRec.Fill = Brushes.GreenYellow;
+            };
+
+            ContentFrame.NavigationService.Navigate(calibrationView, _calibrationService);
+        }
+
+        private void NavigateToReactorLayoutView(object sender, RoutedEventArgs e)
+        {
+            if (_calibrationObject == null) return;
+            var layoutService = new LayoutService(_calibrationObject, new Scheme420());
+            var reactorLayoutView = new ReactorLayoutView();
+            reactorLayoutView.InitializePage(layoutService);
+
+            ContentFrame.NavigationService.Navigate(reactorLayoutView, layoutService);
         }
     }
 }

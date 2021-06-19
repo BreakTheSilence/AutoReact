@@ -1,15 +1,11 @@
 ﻿using System.Collections.Generic;
+using AutoReact.Interfaces.Schemas;
 
 namespace AutoReact.Schemas
 {
-    public static class Scheme420
+    public class Scheme420 : ISchema
     {
-        public static List<List<bool>> Main => GetMain();
-        public static List<List<bool>> Cool => GetCool();
-        public static List<List<bool>> Little => GetLittle();
-        public static List<List<bool>> Skin => GetSkin();
-
-        private static List<List<bool>> GetMain()
+        public List<List<bool>> GetFirstPart()
         {
             var sch = new List<List<bool>>()
             {
@@ -23,7 +19,7 @@ namespace AutoReact.Schemas
             return sch;
         }
 
-        private static List<List<bool>> GetCool()
+        public List<List<bool>> GetSecondPart()
         {
             var sch = new List<List<bool>>()
             {
@@ -37,7 +33,7 @@ namespace AutoReact.Schemas
             return sch;
         }
 
-        private static List<List<bool>> GetLittle()
+        public List<List<bool>> GetLittle()
         {
             var sch = new List<List<bool>>()
             {
@@ -50,7 +46,7 @@ namespace AutoReact.Schemas
             };
             return sch;
         }
-        private static List<List<bool>> GetSkin()
+        public List<List<bool>> GetSkin()
         {
             var sch = new List<List<bool>>()
             {

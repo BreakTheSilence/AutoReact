@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Windows;
 using AutoReact.Entities;
+using AutoReact.Interfaces.Schemas;
 using AutoReact.Schemas;
 
 namespace AutoReact.Services
@@ -10,31 +11,46 @@ namespace AutoReact.Services
     public class LayoutService
     {
         private CalibrationObject _calibrationObject;
-        private Autoit _autoit;
+        private ClickerService _clickerService;
         private Point _currentInventorySlot;
-        public LayoutService(CalibrationObject calibrationObject)
+        private readonly ISchema _schema;
+        public LayoutService(CalibrationObject calibrationObject, ISchema schema)
         {
-            _autoit = new Autoit();
+            _schema = schema;
+            _clickerService = new ClickerService();
             _calibrationObject = calibrationObject;
         }
 
-        public async Task SetReactor_420_Main()
+        public async Task ReactorSetFirstPart()
         {
             await Task.Delay(TimeSpan.FromSeconds(2));
             _currentInventorySlot = new Point(0, 0);
-            SetCoolers(Scheme420.Main);
+            await SetCoolers(_schema.GetFirstPart());
         }
 
-        public async Task SetReactor_420_Left()
+        public async Task ReactorSetSecondPart()
         {
             await Task.Delay(TimeSpan.FromSeconds(2));
             _currentInventorySlot = new Point(0, 0);
-            SetCoolers(Scheme420.Cool);
-            SetCoolers(Scheme420.Little);
-            SetSkin(Scheme420.Skin);
+            var secondPart = _schema.GetSecondPart();
+            var littlePart = _schema.GetLittle();
+            var skin = _schema.GetSkin();
+            if (secondPart != null)
+            {
+                await SetCoolers(secondPart);
+            }
+            if (littlePart != null)
+            {
+                await SetCoolers(littlePart);
+            }
+
+            if (skin != null)
+            {
+                await SetSkin(skin);
+            }
         }
 
-        private void SetCoolers(IReadOnlyList<List<bool>> schema)
+        private async Task SetCoolers(IReadOnlyList<List<bool>> schema)
         {
             for (var y = 0; y < schema.Count; y++)
             {
@@ -46,7 +62,7 @@ namespace AutoReact.Services
                         var invXPoint = (int)(_calibrationObject.InventoryStartPoint.X + _currentInventorySlot.X * _calibrationObject.CellSize);
                         var invYPoint = (int)(_calibrationObject.InventoryStartPoint.Y + _currentInventorySlot.Y * _calibrationObject.CellSize);
 
-                        _autoit.Click("LEFT", invXPoint, invYPoint, 1, 1);
+                        await _clickerService.Click("LEFT", invXPoint, invYPoint, 1, 1);
 
                         if (_currentInventorySlot.X < 8)
                         {
@@ -61,17 +77,17 @@ namespace AutoReact.Services
                         var reactXPoint = (int)(_calibrationObject.ReactorStartPoint.X + x * _calibrationObject.CellSize);
                         var reactYPoint = (int)(_calibrationObject.ReactorStartPoint.Y + y * _calibrationObject.CellSize);
 
-                        _autoit.Click("LEFT", reactXPoint, reactYPoint, 1, 1);
+                        await _clickerService.Click("LEFT", reactXPoint, reactYPoint, 1, 1);
                     }
                 }
             }
         }
 
-        private void SetSkin(IReadOnlyList<List<bool>> schema)
+        private async Task SetSkin(IReadOnlyList<List<bool>> schema)
         {
             var invXPoint = (int)(_calibrationObject.InventoryStartPoint.X + _currentInventorySlot.X * _calibrationObject.CellSize);
             var invYPoint = (int)(_calibrationObject.InventoryStartPoint.Y + _currentInventorySlot.Y * _calibrationObject.CellSize);
-            _autoit.Click("LEFT", invXPoint, invYPoint, 1, 1);
+            await _clickerService.Click("LEFT", invXPoint, invYPoint, 1, 1);
             for (var y = 0; y < schema.Count; y++)
             {
                 var innerList = schema[y];
@@ -81,14 +97,9 @@ namespace AutoReact.Services
                     var reactXPoint = (int)(_calibrationObject.ReactorStartPoint.X + x * _calibrationObject.CellSize);
                     var reactYPoint = (int)(_calibrationObject.ReactorStartPoint.Y + y * _calibrationObject.CellSize);
 
-                    _autoit.Click("RIGHT", reactXPoint, reactYPoint, 1, 1);
+                    await _clickerService.Click("RIGHT", reactXPoint, reactYPoint, 1, 1);
                 }
             }
         }
-
-        // private void ClickToLastPointButton(object sender, RoutedEventArgs e)
-        // {
-        //     autoit.Click("LEFT", _point.X, _point.Y, 1, 1);
-        // }
     }
 }

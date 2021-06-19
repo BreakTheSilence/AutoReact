@@ -1,9 +1,9 @@
 ﻿using System;
-using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using System.Windows;
 using AutoReact.Entities;
 using AutoReact.Events;
+using AutoReact.Helpers;
 using Gma.System.MouseKeyHook;
 
 namespace AutoReact.Services
@@ -31,7 +31,7 @@ namespace AutoReact.Services
                 new CalibrationEventArgs("Нажми в центр левой верхней клетки в реакторе"));
             var reactorStartPoint = await GetClickPoint();
 
-            var cellSize = await GetCellSize();
+            var cellSize = await GetCellSize(reactorStartPoint);
 
             var calibrationObject = new CalibrationObject()
             {
@@ -52,17 +52,13 @@ namespace AutoReact.Services
             return _clickedPoint;
         }
 
-        private async Task<double> GetCellSize()
+        private async Task<double> GetCellSize(Point reactorFirstPoint)
         {
-            CalibrationEvent?.Invoke(this,
-                new CalibrationEventArgs("Нажми в центр левой верхней клетки в реакторе"));
-            var start = await GetClickPoint();
-
             CalibrationEvent?.Invoke(this,
                 new CalibrationEventArgs("Нажми в центр клетки, которая справа от предыдущей"));
             var end = await GetClickPoint();
 
-            return end.X - start.X;
+            return end.X - reactorFirstPoint.X;
         }
 
         private void MouseClickEvent(object? sender, MouseEventExtArgs e)
@@ -75,11 +71,8 @@ namespace AutoReact.Services
         private POINT GetMousePosition()
         {
             POINT point;
-            GetCursorPos(out point);
+            Win32.GetCursorPos(out point);
             return point;
         }
-
-        [DllImport("user32.dll")]
-        static extern bool GetCursorPos(out POINT lpPoint);
     }
 }

@@ -6,26 +6,46 @@
         xmlns:local="clr-namespace:AutoReact"
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
-    <Grid Margin="10">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="0.5*"/>
-        </Grid.RowDefinitions>
-        <Border Grid.Row="0" CornerRadius="8" BorderThickness="3" x:Name="MainBorder">
-            <StackPanel Orientation="Vertical">
-                <TextBlock x:Name="CursorPosition" HorizontalAlignment="Center"/>
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="50"/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+            <Grid Grid.Row="0">
+                <StackPanel Orientation="Horizontal">
+                    <Button Content="Calibration" Margin="10, 5" Click="NavigateToCalibrationView"/>
+                    <Button Content="420 Reactor" Margin="10, 5" Click="NavigateToReactorLayoutView"/>
+                    <Button Content="MOX Reactor" Margin="10, 5"/>
+                    <Button Content="Custom Reactor" Margin="10, 5"/>
 
-                <TextBlock HorizontalAlignment="Center" x:Name="TipTextBlock" Visibility="Collapsed"/>
-            </StackPanel>
-        </Border>
-        <StackPanel Grid.Row="1" Orientation="Horizontal">
-                <Button Content="Calibrate" Click="CalibrateButtonClick" Width="100" HorizontalAlignment="Center" Height="50"/>
-                <Button Click="SetReactor_420" Width="100" HorizontalAlignment="Center" Height="50">
-                    <TextBlock Text="Разложить ректор 420 (Main)" TextWrapping="Wrap"/>
-                </Button>
-                <Button Click="SetReactor_420_Left" Width="100" HorizontalAlignment="Center" Height="50">
-                    <TextBlock Text="Разложить ректор 420 (Остальное)" TextWrapping="Wrap"/>
-                </Button>
-        </StackPanel>
-    </Grid>
+                    <Rectangle HorizontalAlignment="Right" Margin="5" x:Name="CalibrationStateRec" Width="40" Height="40"/>
+                </StackPanel>
+            </Grid>
+
+            <Grid Grid.Row="1">
+                <Frame x:Name="ContentFrame" NavigationUIVisibility="Hidden"/>
+            </Grid>
+        </Grid>
+    <!-- <Grid Margin="10"> -->
+    <!--     <Grid.RowDefinitions> -->
+    <!--         <RowDefinition Height="*"/> -->
+    <!--         <RowDefinition Height="0.5*"/> -->
+    <!--     </Grid.RowDefinitions> -->
+    <!--     <Border Grid.Row="0" CornerRadius="8" BorderThickness="3" x:Name="MainBorder"> -->
+    <!--         <StackPanel Orientation="Vertical"> -->
+    <!--             <TextBlock x:Name="CursorPosition" HorizontalAlignment="Center"/> -->
+    <!-- -->
+    <!--             <TextBlock HorizontalAlignment="Center" x:Name="TipTextBlock" Visibility="Collapsed"/> -->
+    <!--         </StackPanel> -->
+    <!--     </Border> -->
+    <!--     <StackPanel Grid.Row="1" Orientation="Horizontal"> -->
+    <!--             <Button Content="Calibrate" Click="CalibrateButtonClick" Width="100" HorizontalAlignment="Center" Height="50"/> -->
+    <!--             <Button Click="SetReactor_420" Width="100" HorizontalAlignment="Center" Height="50"> -->
+    <!--                 <TextBlock Text="Разложить ректор 420 (Main)" TextWrapping="Wrap"/> -->
+    <!--             </Button> -->
+    <!--             <Button Click="SetReactor_420_Left" Width="100" HorizontalAlignment="Center" Height="50"> -->
+    <!--                 <TextBlock Text="Разложить ректор 420 (Остальное)" TextWrapping="Wrap"/> -->
+    <!--             </Button> -->
+    <!--     </StackPanel> -->
+    <!-- </Grid> -->
 </Window>
